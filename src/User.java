@@ -6,11 +6,11 @@ import java.util.Date;
 import java.util.Objects;
 
 public class User implements Serializable{
-    char mac[];
+    String mac;
     long t;
     static final long gapTime=30*60*1000l;
-    public User(char mac[]){
-        this.mac=mac.clone();
+    public User(String mac){
+        this.mac=mac;
         t=new Date().getTime();
     }
 
@@ -18,8 +18,8 @@ public class User implements Serializable{
         return t;
     }
 
-    public boolean macEquals(char mac[]){
-        return Arrays.equals(mac,this.mac);
+    public boolean macEquals(String mac){
+        return this.mac.equals(mac);
     }
     public void updateTime(){
         t=new Date().getTime();
@@ -29,12 +29,12 @@ public class User implements Serializable{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Arrays.equals(mac, user.mac);
+        return mac.equals(user.mac);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(mac);
+        return mac.hashCode();
     }
 }
 class VCode implements Serializable {
@@ -54,7 +54,7 @@ class VCode implements Serializable {
     public long getvCode() {
         return vCode;
     }
-    public boolean addNewUser(char mac[]){
+    public boolean addNewUser(String mac){
         clearOverTime();
         if(users.size()<userNum){
             //System.out.println(Arrays.toString(mac));

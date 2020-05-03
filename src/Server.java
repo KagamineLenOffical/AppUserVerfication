@@ -23,6 +23,20 @@ public class Server {
     void save() throws IOException {
         fileUtil.SaveFile(vCodes);
     }
+    String readCmd(String cmd) throws IOException {
+        String s[]=cmd.split(" ");
+        if(s[0].equals("REQ")){
+            return getNextVCode(Integer.valueOf(s[1]));
+        }
+        if(s[0].equals("VER")){
+            if(verified(s[1],s[2]))return "SUC";
+            else return "FAI";
+        }
+        if(s[0].equals("END")){
+            endVer(s[1],s[2]);
+        }
+        return null;
+    }
     String getNextVCode(int userNum) throws IOException {
         long ret;
         VCode tmp;
@@ -45,18 +59,17 @@ public class Server {
     boolean verified(String code,String mac) throws IOException {
 //        System.out.println(code+" "+mac);
         long c=Long.valueOf(code);
-        char macChar[]=mac.toCharArray();
         for(VCode vCode:vCodes){
             if(c==vCode.getvCode()){
                 for(User u:vCode.getUsers()){
-                    if(u.macEquals(macChar)){
+                    if(u.macEquals(mac)){
                         u.updateTime();
                         save();
                         return true;
                     }
                 }
 //                System.out.println(Arrays.toString(macChar));
-                boolean ret=vCode.addNewUser(macChar);
+                boolean ret=vCode.addNewUser(mac);
                 save();
                 return ret;
             }
@@ -65,13 +78,11 @@ public class Server {
     }
     void endVer(String code,String mac) throws IOException {
         long c=Long.valueOf(code);
-        char macChar[]=mac.toCharArray();
-
         for(VCode vCode:vCodes){
             if(c==vCode.getvCode()){
                 User delUser = null;
                 for(User u:vCode.getUsers()){
-                    if(u.macEquals(macChar)){
+                    if(u.macEquals(mac)){
                         delUser=u;
                         break;
                     }
